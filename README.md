@@ -6,20 +6,6 @@ graph. Allows to see the cumulated and relative size of all dependencies.
 The `stackcollapse-gradle-dependencies.pl` script takes the output of 
 `gradle dependencies` and converts it to a format accepted by flamegraph.pl
 
-## Usage
-```
-USAGE: stackcollapse-gradle-dependencies.pl [options] infile > outfile
-
-  --org             # include dependency organisation
-  --version         # include dependency version
-  --no-size         # ignore jar size
-  --jar-cache DIR   # specify alternate path for gradle jar cache
-
-```
-
-Otherwise, you can use the `deps-flamegraph` bash script to directly 
-generate the SVG file.
-
 ## Example
 
 See included [example](https://github.com/pcdv/deps-flamegraph/tree/master/samples/cassandra) 
@@ -42,5 +28,18 @@ Generated deps-runtime.svg
 
 NB: the SVG is interactive but this does not work in GitHub (clone the project to see for yourself).
 
+## Usage
+```
+USAGE: stackcollapse-gradle-dependencies.pl [options] infile > outfile
+
+  --org             # include dependency organisation
+  --version         # include dependency version
+  --no-size         # ignore jar size
+  --jar-cache DIR   # specify alternate path for gradle jar cache
+
+```
+
+Otherwise, you can use the `deps-flamegraph` bash script to directly 
+generate the SVG file.
 
 
