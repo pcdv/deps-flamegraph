@@ -66,7 +66,7 @@ foreach (<>) {
   my $line = $_;
 
   # convert indent level to stack depth
-  my $depth = (index($_, '-') - 1) / 5;
+  my $depth = (index($line, '-') - 1) / 5;
 
   # trim unwanted content
   $line =~ s/.*--- (.*)/$1/;
