@@ -59,7 +59,7 @@ sub findSize{
 
 my @stack;
 foreach (<>) {
-	next if (!m/.*[+\\]--- .*/);   # grep "+--- " or "\--- "
+  next if (!m/.*[+\\]--- .*/);   # grep "+--- " or "\--- "
   chomp;
 
   my ($org, $name, $version) = ('', '', '');
