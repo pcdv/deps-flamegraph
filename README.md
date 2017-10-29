@@ -1,10 +1,13 @@
 # deps-flamegraph
 
-Converts the transitive dependencies of a java gradle project into a flame
+Converts the transitive dependencies of a gradle java project into a flame
 graph. Allows to see the cumulated and relative size of all dependencies.
 
 The `stackcollapse-gradle-dependencies.pl` script takes the output of 
 `gradle dependencies` and converts it to a format accepted by flamegraph.pl
+
+The `deps-flamegraph` bash script takes care of everything. Just run it 
+from any gradle java project.
 
 ## Example
 
