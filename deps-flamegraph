@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+#
+# Wraps calls to gradle, stackcollapse-gradle-dependencies.pl and flamegraph.pl 
+# to generate a SVG flamegraph file showing all the dependencies of the current
+# gradle java project.
+
+# locate gradlew
+for i in . .. ../.. ../../.. ../../../..; do
+  if [ -f $i/gradlew ]; then
+    GW="$i/gradlew"
+    break
+  fi
+done
+if [ "$GW" = "" ]; then
+  GW=gradle
+fi
+
+# same as readlink -f but works also on mac os
+function readlink() {
+  ls -l "$1" | sed 's/.* -> \(.*\)/\1/g'
+}
+
+# locate stackcollapse-gradle-dependencies.pl
+EXE=$(readlink "$0")
+DIR=$(dirname "$EXE")
+EXE="$DIR/stackcollapse-gradle-dependencies.pl"
+
+
+# locate flamegraph.pl
+if [ "$FLAMEGRAPH" = "" ]; then
+  type flamegraph.pl 2>1 > /dev/null
+  if [ $? = 0 ]; then
+    FLAMEGRAPH=flamegraph.pl
+  elif [ "$FLAMEGRAPH_HOME" != "" ]; then
+    FLAMEGRAPH="$FLAMEGRAPH_HOME/flamegraph.pl"
+  elif [ -x "$DIR/FlameGraph/flamegraph.pl" ]; then
+    FLAMEGRAPH="$DIR/FlameGraph/flamegraph.pl"
+  else
+    echo "Could not find flamegraph.pl, getting it from GitHub"
+    ( cd $DIR ; git clone https://github.com/brendangregg/FlameGraph )
+    FLAMEGRAPH="$DIR/FlameGraph/flamegraph.pl"
+  fi
+fi
+
+PROJECT=$(basename $(pwd))
+
+if [ "$CONFIGURATION" = "" ]; then
+  echo "Computing $PROJECT runtime dependencies. Set CONFIGURATION=test (or other) to use another configuration"
+  CONFIGURATION=runtime
+else
+  echo "Computing $PROJECT $CONFIGURATION dependencies."
+fi
+
+OUTFILE=deps-$CONFIGURATION.svg
+
+$GW dependencies --configuration $CONFIGURATION | \
+  $EXE "$@" | \
+  $FLAMEGRAPH --minwidth 10 --title "$PROJECT $CONFIGURATION dependencies" --nametype "Dependency:"  --countname KiB \
+  > $OUTFILE
+
+echo "Generated $OUTFILE"
