@@ -17,7 +17,11 @@ fi
 
 # same as readlink -f but works also on mac os
 function readlink() {
-  ls -l "$1" | sed 's/.* -> \(.*\)/\1/g'
+  if [ -L "$1" ]; then
+    ls -l "$1" | sed 's/.* -> \(.*\)/\1/g'
+  else
+    echo "$1"
+  fi
 }
 
 # locate stackcollapse-gradle-dependencies.pl
