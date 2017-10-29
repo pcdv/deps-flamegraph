@@ -32,7 +32,7 @@ EXE="$DIR/stackcollapse-gradle-dependencies.pl"
 
 # locate flamegraph.pl
 if [ "$FLAMEGRAPH" = "" ]; then
-  type flamegraph.pl 2>1 > /dev/null
+  type flamegraph.pl > /dev/null 2>&1 
   if [ $? = 0 ]; then
     FLAMEGRAPH=flamegraph.pl
   elif [ "$FLAMEGRAPH_HOME" != "" ]; then
