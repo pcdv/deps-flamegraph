@@ -32,17 +32,14 @@ USAGE: $0 [options] infile > outfile\n
 
 USAGE_END
 
-if (!$jar_path) {
-  $jar_path = "$ENV{'HOME'}/.gradle/caches/modules-2/files-2.1";
-}
+$jar_path = $jar_path || "$ENV{'HOME'}/.gradle/caches/modules-2/files-2.1";
 
-my %jar_sizes;
+my %jar_size_cache;
+# return size in KiB for specified dependency (org, name, version)
 sub getSize {
   my $key = join(":", @_);
-  my $size = $jar_sizes{$key};
-  if (!$size) {
-    $jar_sizes{$key} = $size = findSize(@_);
-  }
+  my $size = $jar_size_cache{$key};
+  $jar_size_cache{$key} = $size = findSize(@_) unless $size;
   return $size;
 }
 
@@ -54,7 +51,7 @@ sub findSize{
     my @files = File::Find::Rule->file()->name( '*.jar' )->in( $root);
     foreach (@files) {
       next if ($_ =~ /.*-sources.*/);
-      return (-s $_) / 1024;
+      return int((-s $_) / 1024);
     }
   }
   return 1;
@@ -67,7 +64,6 @@ foreach (<>) {
 
   my ($org, $name, $version) = ('', '', '');
   my $line = $_;
-  my $project;
 
   # convert indent level to stack depth
   my $depth = (index($_, '-') - 1) / 5;
@@ -76,28 +72,23 @@ foreach (<>) {
   $line =~ s/.*--- (.*)/$1/;
   $line =~ s/ \(\*\)//;
 
-  if ($line =~ /([^: ]+):([^: ]+):([^: ]+)/) {
+  if ($line =~ /^([^: ]+):([^: ]+):([^: ]+)/) {
     ($org, $name, $version) = ($1, $2, $3);
     $version && $version =~ s/.* -> //;  # use overridden version
   }
   if ($line =~ /project .*:(.*)/) {
-    $project = 1;
     $name = $1;
   }
 
   my $size = $no_size ? 1 : getSize($org, $name, $version);
   my $entry = $name;
 
-  if ($include_org) {
-    $entry = "$org:$entry";
-  }
-  if ($include_version) {
-    $entry = join(':', $entry, $version);
-  }
+  $entry = "$org:$entry" if ($include_org);
+  $entry = "$entry:$version" if ($include_version);
 
   # build and output "stack"
   $stack[$depth] = $entry;
   splice(@stack, $depth + 1);
-  my $out = join(';', @stack);
-  print "$out $size\n";
+  my $joined_stack = join(';', @stack);
+  print "$joined_stack $size\n";
 }
