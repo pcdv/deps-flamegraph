@@ -29,7 +29,6 @@ EXE=$(readlink "$0")
 DIR=$(dirname "$EXE")
 EXE="$DIR/stackcollapse-gradle-dependencies.pl"
 
-
 # locate flamegraph.pl
 if [ "$FLAMEGRAPH" = "" ]; then
   type flamegraph.pl > /dev/null 2>&1 
@@ -41,7 +40,7 @@ if [ "$FLAMEGRAPH" = "" ]; then
     FLAMEGRAPH="$DIR/FlameGraph/flamegraph.pl"
   else
     echo "Could not find flamegraph.pl, getting it from GitHub"
-    ( cd $DIR ; git clone https://github.com/brendangregg/FlameGraph )
+    ( cd $DIR ; git clone --quiet https://github.com/brendangregg/FlameGraph )
     FLAMEGRAPH="$DIR/FlameGraph/flamegraph.pl"
   fi
 fi
@@ -49,7 +48,7 @@ fi
 PROJECT=$(basename $(pwd))
 
 if [ "$CONFIGURATION" = "" ]; then
-  echo "Computing $PROJECT runtime dependencies. Set CONFIGURATION=test (or other) to use another configuration"
+  echo "Computing $PROJECT runtime dependencies. Set CONFIGURATION=testRuntime to compute test dependencies."
   CONFIGURATION=runtime
 else
   echo "Computing $PROJECT $CONFIGURATION dependencies."
