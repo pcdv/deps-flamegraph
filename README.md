@@ -1,5 +1,4 @@
 # deps-flamegraph
-Generate flame graphs from gradle dependencies.
 
 This is an experiment to see if flamegraphs can help analyzing dependencies
 in (big) java projects.
@@ -19,7 +18,15 @@ USAGE: ./stackcollapse-gradle-dependencies.pl [options] infile > outfile
 
 ## Example
 
-See included example that computes the dependencies of the Cassandra driver.
+See included [example](https://github.com/pcdv/deps-flamegraph/tree/master/samples/cassandra) 
+that computes the dependencies of the Cassandra driver.
 
 ![alt text](samples/cassandra/deps-collapsed.svg "Cassandra driver dependencies")
+
+The commands used to generate the SVG are the following (supposing `flamegraph.pl` is in your $PATH).
+```
+./gradlew dependencies --configuration runtime | ../../stackcollapse-gradle-dependencies.pl --size --org > deps-collapsed
+flamegraph.pl deps-collapsed  > deps-collapsed.svg
+```
+
 
