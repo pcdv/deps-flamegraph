@@ -14,12 +14,12 @@ use File::Find::Rule;
 
 # options
 my $include_org;
-my $include_size;
+my $no_size;
 my $include_version;
 my $jar_path;
 
 GetOptions (org => \$include_org,
-            size => \$include_size,
+            'no-size' => \$no_size,
             version => \$include_version,
             'jar-cache=s' => \$jar_path,
             )
@@ -27,7 +27,7 @@ or die <<USAGE_END;
 USAGE: $0 [options] infile > outfile\n
   --org             # include dependency organisation
   --version         # include dependency version
-  --size            # use jar size
+  --no-size         # ignore jar size
   --jar-cache DIR   # specify alternate path for gradle jar cache
 
 USAGE_END
@@ -54,7 +54,7 @@ sub findSize{
     my @files = File::Find::Rule->file()->name( '*.jar' )->in( $root);
     foreach (@files) {
       next if ($_ =~ /.*-sources.*/);
-      return (-s $_);
+      return (-s $_) / 1024;
     }
   }
   return 1;
@@ -85,7 +85,7 @@ foreach (<>) {
     $name = $1;
   }
 
-  my $size = $include_size ? getSize($org, $name, $version) : 1;
+  my $size = $no_size ? 1 : getSize($org, $name, $version);
   my $entry = $name;
 
   if ($include_org) {
