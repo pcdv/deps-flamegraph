@@ -25,10 +25,11 @@ GetOptions (org => \$include_org,
             )
 or die <<USAGE_END;
 USAGE: $0 [options] infile > outfile\n
-	--org		          # include dependency organisation
+  --org             # include dependency organisation
   --version         # include dependency version
-  --size            # take jar size into account
+  --size            # use jar size
   --jar-cache DIR   # specify alternate path for gradle jar cache
+
 USAGE_END
 
 if (!$jar_path) {
