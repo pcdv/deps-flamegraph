@@ -23,12 +23,15 @@ USAGE: stackcollapse-gradle-dependencies.pl [options] infile > outfile
 See included [example](https://github.com/pcdv/deps-flamegraph/tree/master/samples/cassandra) 
 that computes the dependencies of Cassandra.
 
-![alt text](samples/cassandra/deps-collapsed.svg "Cassandra driver dependencies")
+![alt text](samples/cassandra/deps-collapsed.svg "Cassandra dependencies")
 
 The commands used to generate the SVG are the following (supposing `flamegraph.pl` is in your $PATH).
 ```
 ./gradlew dependencies --configuration runtime | ../../stackcollapse-gradle-dependencies.pl --org > deps-collapsed
 flamegraph.pl --countname KiB deps-collapsed  > deps-collapsed.svg
 ```
+
+NB: the SVG is interactive but this does not work in GitHub (clone the project to see for yourself).
+
 
 
