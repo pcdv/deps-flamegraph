@@ -77,14 +77,15 @@ foreach (<>) {
     $version && $version =~ s/.* -> //;  # use overridden version
   }
   if ($line =~ /project .*:(.*)/) {
+    $org = "(project)";
     $name = $1;
   }
 
   my $size = $no_size ? 1 : getSize($org, $name, $version);
   my $entry = $name;
 
-  $entry = "$org:$entry" if ($include_org);
-  $entry = "$entry:$version" if ($include_version);
+  $entry = "$org:$entry" if ($include_org && $org);
+  $entry = "$entry:$version" if ($include_version && $version);
 
   # build and output "stack"
   $stack[$depth] = $entry;
