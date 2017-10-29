@@ -3,6 +3,11 @@
 # Wraps calls to gradle, stackcollapse-gradle-dependencies.pl and flamegraph.pl 
 # to generate a SVG flamegraph file showing all the dependencies of the current
 # gradle java project.
+#
+# You can add the project dir to your PATH or you can simply add a
+# symbolic link to the executable scripts in one of the dirs in your PATH.
+#
+################################################################################
 
 # locate gradlew
 for i in . .. ../.. ../../.. ../../../..; do
