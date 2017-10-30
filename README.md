@@ -34,9 +34,10 @@ Here are the options of the perl script, they can be used also with the `deps-fl
 ```
 USAGE: stackcollapse-gradle-dependencies.pl [options] infile > outfile
 
-  --org             # include dependency organisation
-  --version         # include dependency version
-  --no-size         # ignore jar size
+  --org             # include dependency organisation in label
+  --version         # include dependency version in label
+  --no-size         # ignore jar size (all deps have equal weight)
+  --no-dups         # count deps only once (allows to more accurately aggregate size)
   --jar-cache DIR   # specify alternate path for gradle jar cache
 
 ```
@@ -45,4 +46,8 @@ To generate test dependencies, run the following command:
  ```
  CONFIGURATION=testRuntime deps-flamegraph
  ```
+
+If your goal is to estimate the total weight of your dependencies, use the `--no-dups``
+option to avoid counting deps several times when there are several different paths that
+link to them.
 

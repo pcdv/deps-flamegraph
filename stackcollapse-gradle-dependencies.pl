@@ -15,19 +15,22 @@ use File::Find::Rule;
 # options
 my $include_org;
 my $no_size;
+my $no_dups;
 my $include_version;
 my $jar_path;
 
 GetOptions (org => \$include_org,
             'no-size' => \$no_size,
+            'no-dups' => \$no_dups,
             version => \$include_version,
             'jar-cache=s' => \$jar_path,
             )
 or die <<USAGE_END;
 USAGE: $0 [options] infile > outfile\n
-  --org             # include dependency organisation
-  --version         # include dependency version
-  --no-size         # ignore jar size
+  --org             # include dependency organisation in label
+  --version         # include dependency version in label
+  --no-size         # ignore jar size (all deps have equal weight)
+  --no-dups         # count deps only once (allows to more accurately aggregate size)
   --jar-cache DIR   # specify alternate path for gradle jar cache
 
 USAGE_END
@@ -57,7 +60,8 @@ sub findSize{
   return 1;
 }
 
-my @stack;
+my %all;        # contains already seen deps
+my @stack;      # contains the current dep "stack" 
 foreach (<>) {
   next if (!m/.*[+\\]--- .*/);   # grep "+--- " or "\--- "
   chomp;
@@ -80,6 +84,10 @@ foreach (<>) {
     $org = "(project)";
     $name = $1;
   }
+
+  # handle no-dups option
+  next if $no_dups && $all{"$org:$name"};
+  $all{"$org:$name"} = 1;
 
   my $size = $no_size ? 1 : getSize($org, $name, $version);
   my $entry = $name;
