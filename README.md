@@ -47,7 +47,7 @@ To generate test dependencies, run the following command:
  CONFIGURATION=testRuntime deps-flamegraph
  ```
 
-If your goal is to estimate the total weight of your dependencies, use the `--no-dups``
+If your goal is to estimate the total weight of your dependencies, use the `--no-dups`
 option to avoid counting deps several times when there are several different paths that
 link to them.
 

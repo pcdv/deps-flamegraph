@@ -20,8 +20,10 @@ if [ "$GW" = "" ]; then
   GW=gradle
 fi
 
-# same as readlink -f but works also on mac os
-function readlink() {
+# hack: same as readlink -f but works also on mac os
+# (only works if the symbolic link points to the absolute path
+# of the actual script)
+function readlink_f() {
   if [ -L "$1" ]; then
     ls -l "$1" | sed 's/.* -> \(.*\)/\1/g'
   else
@@ -30,7 +32,7 @@ function readlink() {
 }
 
 # locate stackcollapse-gradle-dependencies.pl
-EXE=$(readlink "$0")
+EXE=$(readlink_f "$0")
 DIR=$(dirname "$EXE")
 EXE="$DIR/stackcollapse-gradle-dependencies.pl"
 
