@@ -55,7 +55,8 @@ fi
 PROJECT=$(basename $(pwd))
 
 if [ "$CONFIGURATION" = "" ]; then
-  echo "Computing $PROJECT runtime dependencies. Set CONFIGURATION=testRuntime to compute test dependencies."
+  echo "Computing $PROJECT runtime dependencies."
+  echo "NB: export CONFIGURATION=compile (or testRuntime, testCompile ...) for other configurations."
   CONFIGURATION=runtime
 else
   echo "Computing $PROJECT $CONFIGURATION dependencies."

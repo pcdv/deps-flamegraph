@@ -9,14 +9,15 @@
 # flamegraph.pl deps-collapsed  > deps-collapsed.svg
 
 use strict;
+use warnings;
 use Getopt::Long;
-use File::Find::Rule;
+use File::Find;
 
 # options
 my $include_org;
+my $include_version;
 my $no_size;
 my $no_dups;
-my $include_version;
 my $jar_path;
 
 GetOptions (org => \$include_org,
@@ -46,16 +47,17 @@ sub getSize {
   return $size;
 }
 
+# using a global variable because of File::Find limitations :(
+my @files;
 # find jar in cache and return its size (or 1 if not found)
 sub findSize{
   my ($org, $name, $version) = @_;
   my $root = "$jar_path/$org/$name/$version";
   if (-d $root) {
-    my @files = File::Find::Rule->file()->name( '*.jar' )->in( $root);
-    foreach (@files) {
-      next if ($_ =~ /.*-sources.*/);
-      return int((-s $_) / 1024);
-    }
+    splice @files;
+    find(sub{ /^.*\.jar\z/s && !/.*-sources.*/ && push(@files, "$File::Find::name"); }, 
+         $root);
+    @files && return int((-s $files[0]) / 1024);
   }
   return 1;
 }
@@ -78,7 +80,7 @@ foreach (<>) {
 
   if ($line =~ /^([^: ]+):([^: ]+):([^: ]+)/) {
     ($org, $name, $version) = ($1, $2, $3);
-    $version && $version =~ s/.* -> //;  # use overridden version
+    $version =~ s/.* -> //;  # use overridden version
   }
   if ($line =~ /project .*:(.*)/) {
     $org = "(project)";
